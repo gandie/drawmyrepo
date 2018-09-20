@@ -75,7 +75,7 @@ if __name__ == '__main__':
     sorted_keys = sorted(commits.keys())
     sorted_values = [commits[key] for key in sorted_keys]
     # cast key tuples into strings and beautify
-    sorted_keys = ['\n'.join(str(key)[3:-1].split(',')) for key in sorted_keys]
+    sorted_keys = ['\n'.join(str(key)[3:-1].split(', ')) for key in sorted_keys]
 
     # setup drawing machine
     figure, axes = matplotlib.pyplot.subplots()
