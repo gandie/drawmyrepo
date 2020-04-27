@@ -26,6 +26,7 @@ wheels/
 *.egg
 MANIFEST
 venv3/
+python3-drawmyrepo/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

@@ -1,0 +1,17 @@
+Source: drawmyrepo
+Maintainer: Lars Bergmann <lb@perfact.de>
+Section: python
+Priority: optional
+Build-Depends: python3-all, debhelper (>= 7.4.3)
+Standards-Version: 3.9.1
+
+
+
+
+
+Package: python3-drawmyrepo
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-matplotlib, python3-tk
+Description: Draw fancy diagrams from your git repo
+         Draw fancy diagrams from your git repo
+
