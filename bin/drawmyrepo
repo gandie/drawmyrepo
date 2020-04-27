@@ -20,15 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+# PIP
 import matplotlib
-import matplotlib.pyplot
+from matplotlib import pyplot as plt
 
+# BUILTIN
 import argparse
 import subprocess
 import os
-
 from datetime import datetime
+
 
 if __name__ == '__main__':
 
@@ -42,44 +43,72 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-s',
-        '--startyear',
+        '--from-year',
+        dest='from_year',
         help='Year to start counting from. Default is 2014.',
         type=int,
         default=2014
     )
 
+    parser.add_argument(
+        '--to-year',
+        help='Year to stop counting. Default is now.',
+        dest='to_year',
+        type=int,
+        default=datetime.now().year
+    )
     args = parser.parse_args()
 
     # call git to get commit timestamps
-    git_log_times = subprocess.check_output(['git', '-C', args.path, 'log', '--format=%at'])
+    git_log_times = subprocess.check_output(
+        ['git', '-C', args.path, 'log', '--format=%at'],
+        universal_newlines=True
+    )
 
     # built datetime objects from timestamps
     dates = [
-        datetime.fromtimestamp(float(line)) for line in git_log_times.split('\n') if line
+        datetime.fromtimestamp(float(line))
+        for line in git_log_times.split('\n') if line
     ]
 
     # initialize commits (per month)
-    years = range(args.startyear, 2019)
+    years = range(args.from_year, args.to_year)
     months = range(1, 13)
-    commits = {(year, month): 0 for year in years for month in months}
+    commits = [
+        {
+            'year': year,
+            'month': month,
+            'count': 0
+        }
+        for year in years for month in months
+    ]
 
     # and count commits
     for date in dates:
         year = date.year
         month = date.month
-        if (year, month) in commits:
-            commits[(year, month)] += 1
+        for commit_d in commits:
+            if year != commit_d['year'] or month != commit_d['month']:
+                continue
+            commit_d['count'] += 1
 
-    # dirty part for drawing starts here: sort data from dict for drawing
-    sorted_keys = sorted(commits.keys())
-    sorted_values = [commits[key] for key in sorted_keys]
-    # cast key tuples into strings and beautify
-    sorted_keys = ['\n'.join(str(key)[3:-1].split(', ')) for key in sorted_keys]
+    # prepare plot data - lets do some padding, yay!
+    x_axis = [
+        '\n'.join([
+            str(c['year']),
+            '0' + str(c['month']) if len(str(c['month'])) == 1 else str(c['month'])
+        ])
+        for c in commits
+    ]
+
+    y_axis = [
+        c['count']
+        for c in commits
+    ]
 
     # setup drawing machine
-    figure, axes = matplotlib.pyplot.subplots()
-    axes.plot(sorted_keys, sorted_values, label=args.path)
+    figure, axes = plt.subplots()
+    axes.plot(x_axis, y_axis, label=args.path)
     axes.set(xlabel="\n<Year>\n<Month>", ylabel="Number of commits")
     axes.legend()
     axes.grid()
