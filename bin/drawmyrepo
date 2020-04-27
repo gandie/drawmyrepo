@@ -72,7 +72,7 @@ if __name__ == '__main__':
     ]
 
     # initialize commits (per month)
-    years = range(args.from_year, args.to_year)
+    years = range(args.from_year, args.to_year + 1)
     months = range(1, 13)
     commits = [
         {
